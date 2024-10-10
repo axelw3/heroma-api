@@ -122,7 +122,13 @@ class HeromaAPICore{
 	}
 }
 
+/**
+ * Representation of a person (user).
+ */
 class HeromaPerson{
+	/**
+	 * Create a representation of a Heroma user.
+	 */
 	constructor(id, firstName, lastName, personnr, idnr){
 		this.id = id; // personRef
 		this.firstName = firstName;
@@ -130,24 +136,57 @@ class HeromaPerson{
 		this.personNr = personnr;
 		this.idnr = idnr;
 	}
+
+	/**
+	 * Get user's first name.
+	 * @return {string} first name of this user
+	 */
 	getFirstName(){
 		return this.firstName;
 	}
+
+	/**
+	 * Get user's last name (surname).
+	 * @return {string} last name of this user
+	 */
 	getLastName(){
 		return this.lastName;
 	}
+
+	/**
+	 * Get the ID/"personal reference number" of this user.
+	 * @return {string} ID/"personal reference number"
+	 */
 	getId(){
 		return this.id;
 	}
+
+	/**
+	 * @see {@link getId}
+	 */
 	getPersonRef(){
 		return this.id;
 	}
+
+	/**
+	 * Get personal identification number ("personnummer"/SSN).
+	 * @return {string} personnummer
+	 */
 	getPersonNr(){
 		return this.personNr;
 	}
+
+	/**
+	 * @see {@link getPersonNr}
+	 */
 	getSsn(){
 		return this.personNr;
 	}
+
+	/**
+	 * User id number.
+	 * @return {string} id number
+	 */
 	getIdnr(){
 		return this.idnr;
 	}

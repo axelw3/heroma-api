@@ -39,15 +39,51 @@ class HeromaScheduleModifications{
 	constructor(data){
 		this.sm = [];
 		this.personRef = data.EmployeeRef;
-		for(let entry in data.ListSM){
-			this.sm.push(new HeromaScheduleModificationsEntry(entry, this.personRef));
+		for(let i = 0; i < data.ListSM.length; i++){
+			this.sm.push(new HeromaScheduleModificationsEntry(data.ListSM[i], this.personRef));
 		}
+	}
+	all(){
+		return this.sm;
 	}
 }
 
 class HeromaScheduleModificationLog{
+	static HeromaScheduleModificationLogEntry = class HeromaScheduleModificationLogEntry{
+		constructor(data){
+			this.SMRef = data.SMRef;
+			this.user = data.User;
+			this.dateTimeString = data.LoggingDateTimeString;
+			this.SMBegin = data.SMFrom;
+			this.SMEnd = data.SMTo;
+			this.text = data.LoggText;
+		}
+		getSMRef(){
+			return this.SMRef;
+		}
+		getUser(){
+			return this.user;
+		}
+		getLoggingDateTimeString(){
+			return this.dateTimeString;
+		}
+		getSMFrom(){
+			return this.SMBegin;
+		}
+		getSMTo(){
+			return this.SMEnd;
+		}
+		getLogText(){
+			return this.text;
+		}
+	}
 	constructor(data){
-		
+		this.entries = data.ListLogModels.map(x=>{
+			return new HeromaScheduleModificationLog.HeromaScheduleModificationLogEntry(x);
+		});
+	}
+	allEntries(){
+		return this.entries;
 	}
 }
 

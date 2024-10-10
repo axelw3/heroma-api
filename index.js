@@ -2,16 +2,20 @@ const { HeromaAPICore, HeromaPerson } = require("./src/core.js");
 const HeromaCalendar = require("./src/calendar.js");
 const HeromaWorkSchedule = require("./src/workschedule.js");
 const HeromaStamplingar = require("./src/stamplingar.js");
+const HeromaEmploymentHistory = require("./src/employment.js");
 const { HeromaSalaryPerson, HeromaSalarySummary, HeromaSalaryDetails } = require("./src/salary.js");
 const { HeromaScheduleModifications, HeromaScheduleModificationsEntry, HeromaScheduleModificationLog } = require("./src/schedulemod.js");
 
 const salary_details_options = encodeURIComponent("{\"Role\":1}");
 
+/**
+ * A NodeJS implementation of the Heroma API.
+ */
 class Heroma{
 	/**
 	 * Create a new Heroma API instance.
-	 * @param {String} host server host
-	 * @param {String} path path to web client (e.g. /Webclient)
+	 * @param {string} host server host
+	 * @param {string} path path to web client (e.g. /Webclient)
 	 */
 	constructor(host, path){
 		this.api = new HeromaAPICore(host, path);
@@ -19,8 +23,8 @@ class Heroma{
 
 	/**
 	 * Log in to Heroma webb using given credentials.
-	 * @param {String} username username
-	 * @param {String} pass password
+	 * @param {string} username username
+	 * @param {string} pass password
 	 * @return {Promise} a promise
 	 */
 	login(username, pass){
@@ -47,7 +51,7 @@ class Heroma{
 
 	/**
 	 * Log out.
-	 * NOTE: All authorization cookies are reset. As such, most APIs will not accessible until a new login is performed.
+	 * NOTE: All authorization cookies will be reset. As such, most APIs will not accessible until a new login is performed.
 	 * @return {Promise} a promise
 	 */
 	logout(){
@@ -67,8 +71,8 @@ class Heroma{
 
 	/**
 	 * Get calendar data for logged-in user.
-	 * @param {String} begin start date (inclusive)
-	 * @param {String} end end date (inclusive)
+	 * @param {string} begin start date (inclusive)
+	 * @param {string} end end date (inclusive)
 	 * @return {Promise} a promise resolving to a HeromaCalendar
 	 */
 	getCalendarData(begin="2024-09-29", end="2024-11-10"){
@@ -96,8 +100,8 @@ class Heroma{
 
 	/**
 	 * Get work schedule for a given period.
-	 * @param {String} begin start date (inclusive)
-	 * @param {String} end end date (inclusive)
+	 * @param {string} begin start date (inclusive)
+	 * @param {string} end end date (inclusive)
 	 * @return {Promise} a promise resolving to a HeromaWorkSchedule
 	 */
 	getWorkSchedule(begin="2024-10-06", end="2024-10-14"){
@@ -149,9 +153,9 @@ class Heroma{
 
 	/**
 	 * Get time registrations for given range of dates.
-	 * @param {String} saldoref saldo (balance) reference/id
-	 * @param {String} begin start date (inclusive)
-	 * @param {String} end end date (inclusive)
+	 * @param {string} saldoref saldo (balance) reference/id
+	 * @param {string} begin start date (inclusive)
+	 * @param {string} end end date (inclusive)
 	 * @return {Promise} a promise resolving to a HeromaStamplingar object with time registrations
 	 */
 	getStamplingar(saldoref, begin="2024-09-01", end="2024-10-08"){
@@ -171,23 +175,32 @@ class Heroma{
 		});
 	}
 
-	/*getEmploymentInfo(){
+	/**
+	 * Get employment history.
+	 * @return {Promise} a promise resolving to a HeromaEmploymentHistory object
+	 */
+	getEmploymentInfo(){
 		return new Promise((resolve, reject)=>{
 			this.api.newRequest(
 				"GET",
 				"/api/EmploymentInfoApi/Get?_=" + new Date().getTime(),
 				{}
 			).send().then(result=>{
-				// TODO
+				try{
+					let parsed = JSON.parse(result.data);
+					resolve(new HeromaEmploymentHistory(parsed));
+				}catch(e){
+					reject(e);
+				}
 			}, reject);
 		});
-	}*/
+	}
 
 	/**
 	 * Get schedule modifications within a given period.
 	 * @param {HeromaPerson} person a person
-	 * @param {String} begin start date (inclusive)
-	 * @param {String} end end date (inclusive)
+	 * @param {string} begin start date (inclusive)
+	 * @param {string} end end date (inclusive)
 	 * @return {Promise} a promise resolving to a HeromaScheduleModifications object
 	 */
 	getScheduleModifications(person, begin="2024-04-01", end="2024-10-31"){
@@ -252,7 +265,7 @@ class Heroma{
 
 	/**
 	 * Get Heroma salary user.
-	 * @param {HeromaPerson} person basic user information
+	 * @param {HeromaPerson} person a person
 	 * @return {Promise} a promise resolving to a HeromaSalaryPerson containing complete salary user information
 	 */
 	getSalaryPerson(person){
@@ -322,6 +335,5 @@ class Heroma{
 		});
 	}
 }
-
 
 module.exports = Heroma;
