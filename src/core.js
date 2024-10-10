@@ -78,12 +78,12 @@ class HeromaAPICall{
 };
 
 class HeromaAPICore{
-	static extractRequestVerificationToken(html){
-		let rvti = html.match(/\<input\s[^>]*name\s*=\s*["']__RequestVerificationToken["'][^>]*>/i);
+	static getHiddenInputValue(html, input_id){
+		let regex = new RegExp("<input\\s[^>]*name\\s*=\\s*[\"']" + input_id + "[\"'][^>]*>","i");
+		let rvti = regex.exec(html);
 		if(rvti && rvti[0]){
-			let requestVerificationToken = rvti[0].match(/value\s*=\s*["']([^"']+)["']/i)[1];
-			//console.log("Request verification token: " + requestVerificationToken);
-			return requestVerificationToken;
+			let inputValue = rvti[0].match(/value\s*=\s*["']([^"']+)["']/i)[1];
+			return inputValue;
 		}
 		return null;
 	}
@@ -91,6 +91,10 @@ class HeromaAPICore{
 	constructor(host, basepath){
 		this.host = host;
 		this.path = basepath;
+		this.cookies = {};
+	}
+	
+	clearCookies(){
 		this.cookies = {};
 	}
 
@@ -118,4 +122,35 @@ class HeromaAPICore{
 	}
 }
 
-module.exports = { HeromaAPICore };
+class HeromaPerson{
+	constructor(id, firstName, lastName, personnr, idnr){
+		this.id = id; // personRef
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.personNr = personnr;
+		this.idnr = idnr;
+	}
+	getFirstName(){
+		return this.firstName;
+	}
+	getLastName(){
+		return this.lastName;
+	}
+	getId(){
+		return this.id;
+	}
+	getPersonRef(){
+		return this.id;
+	}
+	getPersonNr(){
+		return this.personNr;
+	}
+	getSsn(){
+		return this.personNr;
+	}
+	getIdnr(){
+		return this.idnr;
+	}
+}
+
+module.exports = { HeromaAPICore, HeromaPerson };
