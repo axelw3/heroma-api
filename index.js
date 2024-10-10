@@ -138,7 +138,6 @@ class Heroma{
 				{}
 			).send().then(result=>{
 				try{
-					console.log(result.data);
 					let saldon = JSON.parse(result.data);
 					resolve(saldon);
 				}catch(e){

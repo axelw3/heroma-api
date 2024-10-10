@@ -40,7 +40,7 @@ class HeromaScheduleModifications{
 		this.sm = [];
 		this.personRef = data.EmployeeRef;
 		for(let entry in data.ListSM){
-			this.sm.push(new HeromaScheduleModificationsEntry(entry, this.personRef);
+			this.sm.push(new HeromaScheduleModificationsEntry(entry, this.personRef));
 		}
 	}
 }
