@@ -1,0 +1,6 @@
+{
+    "host": "<SERVER HOSTNAME>",
+    "path": "<URL PATH>",
+    "user": "<USERNAME>",
+    "pass": "<PASSWORD>"
+}
