@@ -9,9 +9,9 @@ class HeromaStamplingar{
 		constructor(data){
 			this.type = {
 				id: data.Type,
-				name: data.TypeName,
-				origin: data.Origin
+				name: data.TypeName
 			};
+			this.origin = data.Origin;
 			this.time = new Date(data.Date + " " + data.Time);
 			this.originTime = new Date(data.OriginDate);
 			this.adjusted = this.time.getTime() != this.originTime.getTime();
@@ -43,25 +43,25 @@ class HeromaStamplingar{
 	}
 
 	constructor(data){
-		this.stamplingar = data.map(x=>new HeromaStamplingar.HeromaStampling(x));
+		this.stamplingar = data.map(x => new HeromaStamplingar.HeromaStampling(x));
 	}
 
 	/**
 	 * Get all available time registrations.
 	 * @param {boolean} onlyAdjusted only include registrations which have been modified
-	 * @return {Array} an array of {HeromaStamplingar.HeromaStampling}
+	 * @return {Array<HeromaStamplingar.HeromaStampling} an array of {HeromaStamplingar.HeromaStampling}
 	 */
-	all(onlyAdjusted=false){
+	all(onlyAdjusted = false){
 		if(!onlyAdjusted){
 			return this.stamplingar;
 		}
 
-		return this.all(false).filter(x=>x.adjusted);
+		return this.all(false).filter(x => x.adjusted);
 	}
 
 	/**
 	 * Get all modified time registrations available.
-	 * @return {Array} an array of {HeromaStamplingar.HeromaStampling}
+	 * @return {Array<HeromaStamplingar.HeromaStampling>} an array of {HeromaStamplingar.HeromaStampling}
 	 */
 	allAdjusted(){
 		return this.all(true);
@@ -71,20 +71,20 @@ class HeromaStamplingar{
 	 * Get all available time registrations from given origin.
 	 * @param {string} origin registration origin
 	 * @param {boolean} onlyAdjusted only include registrations which have been modified
-	 * @return {Array} an array of {HeromaStamplingar.HeromaStampling}
+	 * @return {Array<HeromaStamplingar.HeromaStampling>} an array of {HeromaStamplingar.HeromaStampling}
 	 */
-	byOrigin(origin, onlyAdjusted=false){
-		return this.all(onlyAdjusted).filter(x=>x.type.origin === origin);
+	byOrigin(origin, onlyAdjusted = false){
+		return this.all(onlyAdjusted).filter(x => x.origin === origin);
 	}
 
 	/**
 	 * Get all available time registrations of given type.
-	 * @param {string} type registration type
+	 * @param {string} type registration type id
 	 * @param {boolean} onlyAdjusted only include registrations which have been modified
-	 * @return {Array} an array of {HeromaStamplingar.HeromaStampling}
+	 * @return {Array<HeromaStamplingar.HeromaStampling>} an array of {HeromaStamplingar.HeromaStampling}
 	 */
-	byType(type, onlyAdjusted){
-		return this.all(onlyAdjusted).filter(x=>x.type.id === type);
+	byType(type, onlyAdjusted = false){
+		return this.all(onlyAdjusted).filter(x => x.type.id === type);
 	}
 
 	/**
@@ -93,8 +93,8 @@ class HeromaStamplingar{
 	 * @param {boolean} onlyAdjusted only include registrations which have been modified
 	 * @return {Array} an array of {HeromaStamplingar.HeromaStampling}
 	 */
-	byTypeName(typeName, onlyAdjusted){
-		return this.all(onlyAdjusted).filter(x=>x.type.name === typeName);
+	byTypeName(typeName, onlyAdjusted = false){
+		return this.all(onlyAdjusted).filter(x => x.type.name === typeName);
 	}
 }
 

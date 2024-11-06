@@ -1,7 +1,7 @@
 const https = require("https");
 
 class HeromaAPICall{
-	constructor(api_core, method, endpoint, headers={}){
+	constructor(api_core, method, endpoint, headers = {}){
 		this._core = api_core;
 		this.http_options = {
 			host: api_core.host,
@@ -12,7 +12,7 @@ class HeromaAPICall{
 					"X-Requested-With": "XMLHttpRequest",
 					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
 				},
-				{"Cookie": api_core._getCookiesString()},
+				{ "Cookie": api_core._getCookiesString() },
 				headers
 			),
 			method: method
@@ -28,24 +28,24 @@ class HeromaAPICall{
 	}
 
 	send(){
-		return new Promise((resolve, reject)=>{
+		return new Promise((resolve, reject) => {
 			let request = https.request(this.http_options, res=>{
-				let txt="";
+				let txt = "";
 				res.on("data", chunk=>{
 					txt += chunk;
 				});
-				
-				res.on("close", ()=>{
+
+				res.on("close", () => {
 					let setCookies = res.headers["set-cookie"];
 					if(setCookies && setCookies.forEach){
-						setCookies.forEach(raw=>{
+						setCookies.forEach(raw => {
 							let one = raw.split(/;\s*/g);
 							let cookie = {
-								data:one[0],
-								path:"/",
-								expires:-1
+								data: one[0],
+								path: "/",
+								expires: -1
 							};
-							one.slice(1).forEach(field=>{
+							one.slice(1).forEach(field => {
 								let parts = field.split(/=/);
 								if(parts[0] === "expires"){
 									cookie.expires = new Date(parts[1]).getTime();
@@ -59,19 +59,18 @@ class HeromaAPICall{
 							this._core._setCookie(cookie);
 						});
 					}
-					resolve({data:txt, headers:res.headers});
+					resolve({ data: txt, headers: res.headers });
 				});
-				
 			});
-			
+
 			request.on("error", ()=>{
 				reject();
 			});
-			
+
 			if(this.data){
 				request.write(this.data);
 			}
-			
+
 			request.end();
 		});
 	}
@@ -93,7 +92,7 @@ class HeromaAPICore{
 		this.path = basepath;
 		this.cookies = {};
 	}
-	
+
 	clearCookies(){
 		this.cookies = {};
 	}
@@ -155,7 +154,7 @@ class HeromaPerson{
 
 	/**
 	 * Get the ID/"personal reference number" of this user.
-	 * @return {string} ID/"personal reference number"
+	 * @return {string} user ID
 	 */
 	getId(){
 		return this.id;

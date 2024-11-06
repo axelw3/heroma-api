@@ -10,7 +10,7 @@ h.login(opt.user, opt.pass).then(() => {
     console.log("Logged in!");
 
     // Get work schedule for one week
-    h.getWorkSchedule("2024-11-04", "2024-11-12").then(workschedule => {
+    h.getWorkSchedule(Heroma.Day.todayUTC(), Heroma.Day.inUTC(7)).then(workschedule => {
         // Find person by name
         let person = workschedule.getPeople().byName("John", "Doe");
 

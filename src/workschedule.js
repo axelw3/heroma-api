@@ -1,3 +1,5 @@
+const Day = require("./day.js");
+
 /**
  * A work schedule.
  */
@@ -145,9 +147,9 @@ class HeromaWorkSchedule{
 	static HeromaWorkScheduleShift = class HeromaWorkScheduleShift{
 		constructor(data){
 			this.personId = data.PersonId;
-			this.date = data.BelongsToDate;
-			this.beginTime = new Date(new Date(this.date + " 00:00").getTime() + data.Start * 60000);
-			this.endTime = new Date(new Date(this.date + " 00:00").getTime() + data.Stop * 60000);
+			this.date = Day.fromString(data.BelongsToDate);
+			this.beginTime = new Date(this.date.toDate().getTime() + data.Start * 60000);
+			this.endTime = new Date(this.date.toDate().getTime() + data.Stop * 60000);
 			this.breakMinutes = data.Break;
 			this.shiftActivityId = data.ObjectId;
 		}

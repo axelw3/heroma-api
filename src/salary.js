@@ -6,15 +6,15 @@ const { HeromaPerson } = require("./core.js");
 class HeromaSalaryPerson extends HeromaPerson{
 	constructor(data){
 		super(data.PersonRef, data.FirstName, data.LastName, data.Personnr, data.Idnr);
-		this.anstnr = data.Anstnr;
+		this.anstnr = data.Anstnr; // = username
 		this.defaultPATeam = data.DefaultPATeam;
 		this.personInfoRef = this.PersonInfoRef;
 	}
 
-	getIdnr(){
-		return this.idnr;
-	}
-
+	/**
+	 * Get PersonInfoRef number for this person.
+	 * @returns {string} a PersonInfoRef string
+	 */
 	getPersonInfoRef(){
 		return this.personInfoRef;
 	}
@@ -26,22 +26,74 @@ class HeromaSalaryPerson extends HeromaPerson{
 class HeromaSalarySummary{
 	constructor(data){
 		this.salary = {
+			/**
+			 * Gross salary.
+			 * @type {number}
+			 */
 			gross: data.GrossSalary,
+
+			/**
+			 * Preliminary tax amount.
+			 * @type {number}
+			 */
 			prelTax: data.PreliminaryTax,
+
+			/**
+			 * Net salary.
+			 * @type {number}
+			 */
 			net: data.NetSalary,
+
+			/**
+			 * Date of salary payment.
+			 * @type {Date}
+			 */
 			paydate: new Date(data.PayDate),
+
+			/**
+			 * Other compensation amount.
+			 * @type {number}
+			 */
 			otherCompensation: data.OtherCompensation
 		};
 
 		this.remain = {
+			/**
+			 * Days of paid vacation remaining.
+			 * @type {number}
+			 */
 			paidDays: data.RemainingPaidDays,
+
+			/**
+			 * Hours of paid vacation remaining.
+			 * @type {number}
+			 */
 			paidHours: data.RemainingPaidHours,
+
+			/**
+			 * Unpaid days remaining.
+			 * @type {number}
+			 */
 			unpaidDays: data.RemainingUnpaidDays
 		};
 
 		this.vacation = {
+			/**
+			 * Saved days of vacation.
+			 * @type {number}
+			 */
 			saved: data.SavedVacation,
+
+			/**
+			 * Saved hours of vacation.
+			 * @type {number}
+			 */
 			savedHours: data.SavedHours,
+
+			/**
+			 * Vacation quota.
+			 * @type {number}
+			 */
 			quota: data.VacationQuota
 		};
 
@@ -49,12 +101,34 @@ class HeromaSalarySummary{
 		this.yearWorkDays = data.YearWorkDays;
 
 		this.salaryYear = {
+			/**
+			 * Total gross salary in selected year.
+			 */
 			gross: data.GrossSalaryYear,
+
+			/**
+			 * Total preliminary tax amount in selected year.
+			 */
 			prelTax: data.PreliminaryTaxYear
 		};
 
+		/**
+		 * Timestamp of last salary calcuation.
+		 */
 		this.dateCalculated = new Date(data.SalaryCalculated);
+
+		/**
+		 * Formatted timestamp of last salary calculation.
+		 */
 		this.dateCalculatedString = data.SalaryCalculatedString;
+	}
+
+	/**
+	 * Get basic salary information for this salary period.
+	 * @returns {object} a salary information object
+	 */
+	getSalary(){
+		return this.salary;
 	}
 }
 
@@ -62,6 +136,9 @@ class HeromaSalarySummary{
  * Detailed salary information (e.g. information about individual salary entries) for a pay period.
  */
 class HeromaSalaryDetails{
+	/**
+	 * A salary entry (löneart).
+	 */
 	static HeromaSalaryDetailsEntry = class HeromaSalaryDetailsEntry{
 		constructor(edata){
 			this.quantity = edata.Quantity;
@@ -70,26 +147,49 @@ class HeromaSalaryDetails{
 			this.amount = edata.Amount;
 			this.name = edata.Name;
 			this.noDeduction = edata.NoDeduction;
-			this.begin = edata.Fom;
-			this.end = edata.Tom;
+			this.begin = edata.Fom || "\xd6ppet";
+			this.end = edata.Tom || "\xd6ppet";
 			this.lart = edata.Lart;
-			this.salaryType = edata.LöneArt;
-			this.period = edata.Period;
+			this.loneArt = edata["LöneArt"];
+			this.extent = edata.Extent;
+			this.period = new Date(edata.Period); // löneperiod
+			this.rowNumber = edata.RowNumber;
+			this.serialNo1 = edata.SerialNumber1;
 			this.reserveAmt = edata.ReserveAmount;
 			this.transactionType = edata.TransactionType;
-			this["lätthelg"] = edata["Lätthelg"];
+			this.latthelg = edata["L\xe4tthelg"];
+			this.orgRef = edata.OrgRef;
 		}
 
+		/**
+		 * Get name of this salary entry.
+		 * @returns name of this entry
+		 */
 		getName(){
 			return this.name;
 		}
 
+		/**
+		 * Get type id of this salary entry (löneart).
+		 * @returns {string} type id
+		 */
 		getLart(){
 			return this.lart;
 		}
 
+		/**
+		 * Get type (löneart) details for this salary entry.
+		 * @returns {object} an object
+		 */
+		getLartDetails(){
+			return this.loneArt;
+		}
+
+		/**
+		 * @deprecated use {@link getType}
+		 */
 		getType(){
-			return this.salaryType;
+			return this.getLartDetails();
 		}
 
 		/**
@@ -119,15 +219,16 @@ class HeromaSalaryDetails{
 
 	constructor(data){
 		this.entries = {};
-		data.data.forEach(rawentry=>{
+
+		data.data.forEach(rawentry => {
 			let entry = new HeromaSalaryDetails.HeromaSalaryDetailsEntry(rawentry);
 			this.entries[entry.getLart()] = entry;
 		});
 	}
 
 	/**
-	 * Get salary entry by type.
-	 * @param {string} lart type of salary (e.g. hourly, overtime, holiday pay)
+	 * Get salary entry by type (löneart), e.g. hourly, overtime, holiday pay.
+	 * @param {string} lart salary type id, usually a four-digit number
 	 * @return {HeromaSalaryDetails.HeromaSalaryDetailsEntry} a salary entry
 	 */
 	getEntry(lart){

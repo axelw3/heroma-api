@@ -1,3 +1,5 @@
+const Day = require("./day.js");
+
 /**
  * Heroma calendar data (personal).
  */
@@ -119,16 +121,16 @@ class HeromaCalendar{
 		};
 
 		constructor(data){
-			this.date = data.Date;
+			this.date = Day.fromString(data.Date);
 			this.workhours = (data.Workhours || []).map(shift => new HeromaCalendar.HeromaCalendarDay.HeromaCalendarShift(shift));
 		}
 
 		/**
 		 * Get date.
-		 * @return {string} a date string in the YYYY-MM-DD format
+		 * @return {Day} a date string in the YYYY-MM-DD format
 		 */
 		getDate(){
-			return this.date;
+			return this.date.copy();
 		}
 
 		/**
@@ -165,13 +167,11 @@ class HeromaCalendar{
 
 	/**
 	 * Get calendar day by date.
-	 * @param {string} year year
-	 * @param {string} month month, in the format MM (e.g. 01 = January)
-	 * @param {string} day day, in the format DD (e.g. 10 = 10th day of the month)
+	 * @param {Day} day a day
 	 * @return {HeromaCalendar.HeromaCalendarDay} a calendar day
 	 */
-	getDay(year, month, day){
-		let data = this.days[year + "-" + month + "-" + day];
+	getDay(day){
+		let data = this.days[day.toString()];
 		if(!data){
 			throw new Error("Unknown date.");
 		}
